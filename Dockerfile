@@ -1,5 +1,6 @@
 FROM buildpack-deps:trusty
 
+# ### Add Node user and group
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
 
@@ -29,15 +30,17 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
   && rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
-FROM node:7.2.0
-
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 ARG NODE_ENV
 ENV NODE_ENV $NODE_ENV
-COPY package.json /usr/src/app/
-RUN npm install
-COPY . /usr/src/app
+
+# ### Add package.json and install deps
+#COPY package.json /usr/src/app/
+#RUN npm install
+
+# ### Add app src
+#COPY . /usr/src/app
 
 CMD [ "npm", "start" ]
