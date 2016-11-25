@@ -38,4 +38,5 @@ ENV NODE_ENV $NODE_ENV
 # ### Add app src
 #COPY . /usr/src/app
 
-CMD [ "npm", "start" ]
+#CMD [ "npm", "start" ]
+CMD [ "bash" ]
