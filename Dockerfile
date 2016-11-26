@@ -31,9 +31,15 @@ WORKDIR /usr/src/app
 ARG NODE_ENV
 ENV NODE_ENV $NODE_ENV
 
+#  ### install npm packages
+RUN npm install -g \
+    polymer-cli \
+    bower 
+    
 # ### Add package.json and install deps
 #COPY package.json /usr/src/app/
 #RUN npm install
+# bower install --allow-root # likely to need this as polymer init tries to run bower without the root flag
 
 # ### Add app src
 #COPY . /usr/src/app
