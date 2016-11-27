@@ -25,7 +25,7 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
   && rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
-RUN apt-get s3cmd # needs to be configured - look at minio also for GCS
+RUN apt-get install s3cmd # needs to be configured - look at minio also for GCS
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
