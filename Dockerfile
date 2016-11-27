@@ -25,7 +25,13 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
   && rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
-RUN apt-get install s3cmd # needs to be configured - look at minio also for GCS
+RUN apt-get -y update
+RUN apt-get -y install software-properties-common 
+
+RUN add-apt-repository universe 
+RUN add-apt-repository main
+
+RUN apt-get -y install s3cmd # needs to be configured - look at minio also for GCS
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
@@ -37,7 +43,13 @@ ENV NODE_ENV $NODE_ENV
 RUN npm install -g \
     polymer-cli \
     bower 
-    
+
+# ### ########## Section for CKAN installation
+# ### Needs trusty for package install, others should install from source
+# ### Trying from package
+
+# ### ########## End section for CKAN installation
+
 # ### Add package.json and install deps
 #COPY package.json /usr/src/app/
 #RUN npm install
