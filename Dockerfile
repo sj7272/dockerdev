@@ -28,13 +28,16 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
 # Let the conatiner know that there is no tty
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get -y update
-RUN apt-get -y install software-properties-common 
+RUN apt-get update
+# Avoid ERROR: invoke-rc.d: policy-rc.d denied execution of start.
+RUN echo "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d
+RUN apt-get upgrade -y
+RUN apt-get install -y software-properties-common 
 
 RUN add-apt-repository universe 
 RUN add-apt-repository main
 
-RUN apt-get -y install s3cmd # needs to be configured - look at minio also for GCS
+RUN apt-get install -y s3cmd # needs to be configured - look at minio also for GCS
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
