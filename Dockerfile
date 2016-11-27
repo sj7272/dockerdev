@@ -47,7 +47,12 @@ RUN npm install -g \
 # ### ########## Section for CKAN installation
 # ### Needs trusty for package install, others should install from source
 # ### Trying from package
-
+RUN apt-get install -y nginx apache2 libapache2-mod-wsgi libpq5 redis-server git-core
+RUN wget http://packaging.ckan.org/python-ckan_2.6-trusty_amd64.deb
+RUN dpkg -i python-ckan_2.6-trusty_amd64.deb
+RUN apt-get install -y postgresql
+RUN sudo -u postgres psql -l
+RUN apt-get install -y solr-jetty
 # ### ########## End section for CKAN installation
 
 # ### Add package.json and install deps
