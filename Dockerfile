@@ -31,13 +31,13 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update
 # Avoid ERROR: invoke-rc.d: policy-rc.d denied execution of start.
 RUN echo "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d
-RUN apt-get upgrade -y
-RUN apt-get install -y software-properties-common 
+
+RUN apt-get install -y software-properties-common git git-core 
 
 RUN add-apt-repository universe 
 RUN add-apt-repository main
 
-RUN apt-get install -y s3cmd # needs to be configured - look at minio also for GCS
+RUN apt-get -y install s3cmd # needs to be configured - look at minio also for GCS
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
@@ -49,22 +49,64 @@ ENV NODE_ENV $NODE_ENV
 RUN npm install -g \
     polymer-cli \
     bower 
-
+    
 # ### ########## Section for CKAN installation
 # ### Needs trusty for package install, others should install from source
 # ### Trying from package
-RUN apt-get install -y nginx apache2 libapache2-mod-wsgi libpq5 redis-server git-core
+RUN apt-get install -y nginx apache2 libapache2-mod-wsgi libpq5 redis-server
+RUN echo "ServerName localhost" | sudo tee /etc/apache2/conf-available/fqdn.conf
+RUN sudo a2enconf fqdn
 RUN wget http://packaging.ckan.org/python-ckan_2.6-trusty_amd64.deb
 RUN dpkg -i python-ckan_2.6-trusty_amd64.deb
+RUN service apache2 reload
 RUN apt-get install -y postgresql
-RUN sudo -u postgres psql -l
-RUN apt-get install -y solr-jetty
+# ### uncomment localhost setting in /etc/postgresql/9.3/main/postgresql.conf
+RUN /etc/init.d/postgresql restart
+RUN sudo -u postgres psql -l # check some dbs exist
+RUN sudo -u postgres createuser -S -D -R -P ckan_default # add user - needs interactive shell to enter pw 
+# ### You can do that using plain SQL after connecting as a superuser (e.g. postgres) to the database in question:
+# ### create user user1 password 'foobar'
+# ### If you need to do this from within a script you can put that into a sql file and then pass this to psql:
+# ### » sudo -u postgres psql --file=create_user.sql
+RUN sudo -u postgres createdb -O ckan_default ckan_default -E utf-8 # create database owned by this user
+# ### Edit the sqlalchemy.url option in your CKAN configuration file (/etc/ckan/default/production.ini) file and set the correct password, database and database user
+
+
+# ### mv data to different volume
+# sudo service postgresql stop
+# sudo pg_dropcluster 9.3 main
+# sudo pg_createcluster -d /newdrive/postgresdbs/ 9.3 main
+# sudo cp -a /olddrive/var/lib/postgresql/9.3/main/. /newdrive/postgresdbs/ # there was nothing to move on a fresh install
+# sudo chown -R postgres:postgres /newdrive/postgresdbs/
+# sudo service postgresql start
+
+#RUN apt-get install -y solr-jetty
+# ### Edit the Jetty configuration file (/etc/default/jetty) and change the following variables:
+
+# NO_START=0            # (line 4)
+# JETTY_HOST=127.0.0.1  # (line 16)
+# JETTY_PORT=8983       # (line 19)
+
+RUN service jetty start
+
+RUN mv /etc/solr/conf/schema.xml /etc/solr/conf/schema.xml.bak
+RUN ln -s /usr/lib/ckan/default/src/ckan/ckan/config/solr/schema.xml /etc/solr/conf/schema.xml
+RUN service jetty restart
+# ### Finally, change the solr_url setting in your CKAN configuration file (/etc/ckan/default/production.ini) to point to your Solr server, for example:
+# ### solr_url=http://127.0.0.1:8983/solr
+
+# ### Edit the CKAN configuration file (/etc/ckan/default/production.ini) to set up the following options:
+# site_id
+# Each CKAN site should have a unique site_id, for example:
+# ckan.site_id = default
+# site_url
+# Provide the site’s URL. For example:
+# ckan.site_url = http://demo.ckan.org  -- http://ckan.project72.com
 # ### ########## End section for CKAN installation
 
 # ### Add package.json and install deps
 #COPY package.json /usr/src/app/
 #RUN npm install
-# bower install --allow-root # likely to need this as polymer init tries to run bower without the root flag
 
 # ### Add app src
 #COPY . /usr/src/app
