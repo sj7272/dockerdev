@@ -104,7 +104,10 @@ RUN service jetty restart
 # ckan.site_url = http://demo.ckan.org  -- http://ckan.myproject72.com
 # ### set up the site db
 RUN ckan db init
-
+# ### Optionally, setup the DataStore and DataPusher by following the instructions in DataStore extension. http://docs.ckan.org/en/latest/maintaining/datastore.html
+# ### Also optionally, you can enable file uploads by following the instructions in FileStore and file uploads. http://docs.ckan.org/en/latest/maintaining/filestore.html
+RUN service apache2 restart
+RUN service nginx restart
 # ### ########## End section for CKAN installation
 
 # ### Add package.json and install deps
