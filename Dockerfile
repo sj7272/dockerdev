@@ -101,7 +101,7 @@ RUN service jetty restart
 # ckan.site_id = default
 # site_url
 # Provide the site’s URL. For example:
-# ckan.site_url = http://demo.ckan.org  -- http://ckan.project72.com
+# ckan.site_url = http://demo.ckan.org  -- http://ckan.myproject72.com
 # ### ########## End section for CKAN installation
 
 # ### Add package.json and install deps
