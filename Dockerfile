@@ -50,7 +50,7 @@ RUN npm install -g \
     polymer-cli \
     bower 
     
-# ### ########## Section for CKAN installation
+# ### ########## Section for CKAN installation - taken from http://docs.ckan.org/en/latest/maintaining/installing/install-from-package.html
 # ### Needs trusty for package install, others should install from source
 # ### Trying from package
 RUN apt-get install -y nginx apache2 libapache2-mod-wsgi libpq5 redis-server
