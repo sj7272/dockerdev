@@ -30,6 +30,13 @@ curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 sudo apt-get update && sudo apt-get install yarn
 
+# Install latest git
+sudo add-apt-repository ppa:git-core/ppa
+sudo apt-get update
+sudo apt-get install -y git
+git config --global user.name "sj7272"
+git config --global user.email "sj.7272@gmail.com"
+
 # Let the container know that there is no tty
 ENV DEBIAN_FRONTEND noninteractive
 
