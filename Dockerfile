@@ -37,6 +37,9 @@ sudo apt-get install -y git
 git config --global user.name "sj7272"
 git config --global user.email "sj.7272@gmail.com"
 
+# Instal Open SSH
+sudo apt-get install -y openssh-server
+
 # Let the container know that there is no tty
 ENV DEBIAN_FRONTEND noninteractive
 
